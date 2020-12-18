@@ -1,2 +1,2 @@
-# sensoreg
+# devicereg
 my home sensor registrar

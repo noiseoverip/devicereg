@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -19,6 +20,7 @@ type Device struct {
 func main() {
 	// In memory store of registered devices, key -
 	devices := make(map[string]Device, 0)
+	var storeLock sync.Mutex
 
 	bindAddress := "0.0.0.0:8080"
 	flag.StringVar(&bindAddress, "bind", bindAddress, "example: 0.0.0.0:8080")
@@ -37,6 +39,8 @@ func main() {
 		}
 		device.Time = time.Now()
 		device.Host = strings.Split(c.Request.RemoteAddr, ":")[0]
+		storeLock.Lock()
+		defer storeLock.Unlock()
 		devices[device.Host] = device
 		c.Status(201)
 	})
